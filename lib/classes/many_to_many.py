@@ -1,9 +1,12 @@
 class Article:
+    #class attribute to store all the instances
     my_list = []
     def __init__(self, author, magazine, title):
         self.author = author
         self.magazine = magazine
         self.title = title
+        
+        #appends the current instance (self) to the list my_list belonging to the class.
         self.__class__.my_list.append(self)
       
       
@@ -19,6 +22,7 @@ class Author:
 
     @property
     def name(self):
+        """The name property"""
         return self._name
 
     def articles(self):
@@ -38,31 +42,35 @@ class Author:
 class Magazine:
     def __init__(self, name, category):
         if not isinstance(name, str) or len(name) < 2 or len(name) > 16:
-            raise ValueError("Magazine name must be a string between 2 and 16 characters.")
+            raise ValueError("Names must be between 2 and 16 characters")
         if not isinstance(category, str) or len(category) == 0:
-            raise ValueError("Magazine category must be a non-empty string.")
+            raise ValueError("Categories must be of type str and must be longer than 0 characters")
         self._name = name
         self._category = category
 
     @property
     def name(self):
+        """The name property"""
         return self._name
 
     @name.setter
-    def name(self, value):
-        if not isinstance(value, str) or len(value) < 2 or len(value) > 16:
-            raise ValueError("Magazine name must be a string between 2 and 16 characters.")
-        self._name = value
+    def name(self, name):
+        """Name must be a string between 2 and 16 characters in length"""
+        if not isinstance(name, str) or len(name) < 2 or len(name) > 16:
+            raise ValueError("Names must be between 2 and 16 characters")
+        self._name = name
 
     @property
     def category(self):
+        """The category property"""
         return self._category
 
     @category.setter
-    def category(self, value):
-        if not isinstance(value, str) or len(value) == 0:
+    def category(self, category):
+        """Categories must be of type str"""
+        if not isinstance(category, str) or len(category) == 0:
             raise ValueError("Magazine category must be a non-empty string.")
-        self._category = value
+        self._category = category
         
     def articles(self):
         return [article for article in Article.my_list if article.magazine == self]
@@ -75,12 +83,5 @@ class Magazine:
         return titles if titles else None
 
     def contributing_authors(self):
-        author_article_count = {}
-        for article in self.articles():
-            author_name = article.author.name
-            if author_name in author_article_count:
-                author_article_count[author_name] += 1
-            else:
-                author_article_count[author_name] = 1
-        authors = [author for author in self.contributors() if author_article_count[author.name] > 2]
-        return authors if authors else None
+        authors = [article.author for article in self.articles]
+        return [author for author in set(authors) if authors.count(author) > 2] or None
